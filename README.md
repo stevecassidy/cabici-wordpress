@@ -7,6 +7,12 @@ site. The plugin provides a number of content options.
 The options page for the plugin allows you to select the default club that will be
 used in finding race listings and results.
 
+Installation
+============
+
+Download the file [cabici.zip](https://bitbucket.org/stevecassidy/wordpress-cabici/downloads/cabici.zip)
+and install into your Wordpress instance via the dashboard.
+
 Shortcodes
 ==========
 
