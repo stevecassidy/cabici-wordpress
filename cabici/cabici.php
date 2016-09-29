@@ -8,106 +8,156 @@ Author: Owen Cassidy
 Author URI: http://owencassidy.me/
 */
 
+
 include 'cabici_options.php';
+include 'widget_nextrace.php';
+include 'widget_result.php';
+include 'widget_racelist.php';
+include 'shortcode_results.php';
+include 'shortcode_schedule.php';
+
+/**
+ * Proper way to enqueue scripts and styles
+ */
+function wpdocs_cabici_scripts() {
+    wp_enqueue_style( 'style-name', plugin_dir_url(__FILE__) . 'cabici.css');
+}
+add_action( 'wp_enqueue_scripts', 'wpdocs_cabici_scripts' );
+
+
+// global configuration
+$cabici_config = array(
+        'devel' => false,
+        'url' => 'http://cabici.net/',
+        'cache' => true
+);
+
+if ($cabici_config['devel']) {
+    $cabici_config['url'] = 'http://localhost/wp-content/plugins/cabici/';
+}
+
+function console_log( $data ){
+  echo '<script>';
+  echo 'console.log('. json_encode( $data ) .')';
+  echo '</script>';
+}
+
+// -------------------------------------------
+// data acquisition
+// -------------------------------------------
+
+function api_request($url) {
+
+    global $cabici_config;
+
+    $options = get_option('cabici_options');
+
+    $cabici_url = $cabici_config['url'];
+
+    $url = $cabici_url.$url;
+
+    if ( !$cabici_config['cache'] || false === ( $data = get_transient( $url ) ) ) {
+
+        $resp = wp_remote_get( $url );
+        $json = wp_remote_retrieve_body( $resp );
+        $data = json_decode( $json, true );
+
+        set_transient($url, $races, HOUR_IN_SECONDS);
+    }
+    return $data;
+}
+
 
 function get_club_races() {
 
+    global $cabici_config;
+
     $options = get_option('cabici_options');
     $club = $options['club'];
+
+    $url = 'api/races?club='.$club.'&select=future';
+
+    return api_request($url);
+}
+
+
+function get_all_races($count) {
+
+    global $cabici_config;
+
+    $options = get_option('cabici_options');
+    $club = $options['club'];
+
+    $url = 'api/races?select=future&count='.$count;
+
+    return api_request($url);
+}
+
+function get_club_info() {
+
+    global $cabici_config;
+
+    $options = get_option('cabici_options');
+    $club = $options['club'];
+    if ($cabici_config['devel']) {
+        $url = 'api/clubs/'.$club;
+    } else {
+        $url = 'api/clubs/'.$club.'/';
+    }
+    return api_request($url);
+}
+
+function get_club_list() {
+
+    global $cabici_config;
+
+    $options = get_option('cabici_options');
+    $club = $options['club'];
+    if ($cabici_config['devel']) {
+        $url = 'api/clubs';
+    } else {
+        $url = 'api/clubs/';
+    }
+    return api_request($url);
+}
+
+
+// get results for the given race, only riders placing in each grade
+function get_race_result($raceid) {
+
+    global $cabici_config;
+
+    $options = get_option('cabici_options');
+    if ($cabici_config['devel']) {
+        $url = 'api/raceresults-placed';
+    } else {
+        $url = 'api/raceresults/?race='.$raceid.'&placed=true';
+    }
+
+    $result = api_request($url);
+    return $result;
+}
+
+// get the id of the most recent race for a club
+function most_recent_race($clubslug) {
+
+    global $cabici_config;
+
+    $options = get_option('cabici_options');
+    $club = $options['club'];
+
     $key = 'cabici_races_' . $club;
-
-    if ( false === ( $races = get_transient( $key ) ) ) {
-
-        $url = 'http://test.cabici.net/api/races?club='.$club.'&scheduled=true';
-        $json = wp_remote_retrieve_body( wp_remote_get( $url ) );
-        $races = json_decode( $json, true );
-
-        set_transient($key, $races, HOUR_IN_SECONDS);
+    if ($cabici_config['devel']) {
+        $url = 'api/races-recent';
+    } else {
+        $url = 'api/races?club='.$club.'&select=results&count=1';
     }
 
-    return $races;
+    $races = api_request($url);
+    return $races[0];
 }
 
-function build_table() {
-
-    $options = get_option('cabici_options');
-    $club = $options['club'];
-
-    if (!$club) {
-        return '<p>No Club configured.</p>';
-    }
-
-    $races = get_club_races();
-
-    ob_start();
-    ?>
-    <div class="cabici-container">
-        <table class='table'>
-            <thead>
-                <tr>
-                    <th>Date/Start Time</th>
-                    <th>Race</th>
-                    <th>Location</th>
-                    <th>Officials</th>
-                </tr>
-            </thead>
-            <tbody>
-    <?php
-    foreach ($races as $race) {
-        $url_arr = explode( '/', $race['url'] );
-        end( $url_arr );
-        $race_number = prev( $url_arr );
-        ?>
-        <tr>
-            <td><?= $race['date'] ?><br>
-               <?= $race['starttime'] ?></td>
-            <td>
-                <a target=new href="http://test.cabici.net/races/xyzzy/<?= $race['id'] ?>"><?= $race['title'] ?></a>
-            </td>
-            <td><?= $race['location']['name'] ?></td>
-            <td>
-                <?php if ($race['officials']) { ?>
-                <ul>
-                    <li><strong>Commissaire:</strong> <?= $race['officials']['Commissaire'][0]['name'] ?></li>
-                    <li><strong>Duty Officer:</strong>  <?= $race['officials']['Duty Officer'][0]['name'] ?></li>
-                    <li><strong>Duty Helpers:</strong>
-                        <?php
-                            foreach ($race['officials']['Duty Helper'] as $dh) {
-                                echo($dh['name']. ' ');
-                            }
-                        ?>
-                    </li>
-                </ul>
-                <?php } ?>
-            </td>
-            <!--
-		<td><a onclick="insertResults('<?= $race['id'] ?>', '.race-container')">View results</a></td>
-	    -->
-        </tr>
-        <?php
-    }
-    ?>
-            </tbody>
-        </table>
-        <div class="race-container"></div>
-    </div>
-    <script type="text/javascript" src="/wp-content/plugins/cabici/races.js"></script>
-    <!-- also rely on jquery -->
-    <?php
-
-    $table = ob_get_clean();
-
-    return $table;
-}
-
-function cabici_handler( $atts, $content = null ) {
-    $table = build_table();
-
-    return $table;
-}
-
-add_shortcode( 'cabici', 'cabici_handler' );
-
+/*
 // Custom Post Type
 
 add_action( 'init', 'create_post_type' );
@@ -123,62 +173,33 @@ function create_post_type() {
     )
   );
 }
+*/
 
-// Creating the widget
-class cabici_nextrace_widget extends WP_Widget {
 
-    function __construct() {
-        parent::__construct(
-            // Base ID of your widget
-            'cabici_nextrace_widget',
+// Dashboard Widget
 
-            // Widget name will appear in UI
-            __('Cabici Next Race Widget', 'cabici_nextrace_widget_domain'),
+function cabici_add_dashboard_widgets() {
 
-            // Widget description
-            array( 'description' => __( 'Widget to display the next race for a club', 'cabici_nextrace_widget_domain' ), )
+	wp_add_dashboard_widget(
+                 'cabici_dashboard_widget',         // Widget slug.
+                 'Cabici Race Management',         // Title.
+                 'cabici_dashboard_widget_function' // Display function.
         );
-    }
-
-    // Creating widget front-end
-    // This is where the action happens
-    public function widget( $args, $instance ) {
-        // before and after widget arguments are defined by themes
-        echo $args['before_widget'];
-        echo $args['before_title'] . "Next Race" . $args['after_title'];
-
-        $races = get_club_races();
-        $race = $races[0];
-        ?>
-        <ul class='raceinfo'>
-            <li class='date'><?= $race['date'] ?></li>
-            <li class='starttime'><?= $race['starttime'] ?></li>
-            <li class='title'><a target=new href="http://test.cabici.net/races/xyzzy/<?= $race['id'] ?>"><?= $race['title'] ?></a></li>
-            <li class='location'><?= $race['location']['name'] ?></li>
-        </ul>
-        <?php
-
-        echo $args['after_widget'];
-    }
-
-    // Widget Backend
-    public function form( $instance ) {
-        return "<p></p>";
-    }
-
-    // Updating widget replacing old instances with new
-    public function update( $new_instance, $old_instance ) {
-        $instance = array();
-        $instance['club'] = ( ! empty( $new_instance['club'] ) ) ? strip_tags( $new_instance['club'] ) : '';
-        return $instance;
-    }
-} // Class cabici_nextrace_widget ends here
-
-// Register and load the widget
-function wpb_load_widget() {
-	register_widget( 'cabici_nextrace_widget' );
 }
-add_action( 'widgets_init', 'wpb_load_widget' );
+add_action( 'wp_dashboard_setup', 'cabici_add_dashboard_widgets' );
 
+/**
+ * Otput the contents of our Dashboard Widget.
+ */
+function cabici_dashboard_widget_function() {
+
+    global $cabici_config;
+    $info = get_club_info();
+
+	echo "<p>Cabici plugin configured for ".$info['name']."</p>";
+    echo "<p>Go to <a href='".$cabici_config['url']."clubs/".$info['slug']."/dashboard/'>";
+    echo $info['name']." Dashboard</a>";
+    echo " on Cabici to update race schedule and add results.</p>";
+}
 
 ?>

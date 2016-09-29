@@ -65,14 +65,14 @@ class CabiciSettingsPage
 
         add_settings_section(
             'setting_section_id', // ID
-            'Race Settings', // club
+            'Club Settings', // club
             array( $this, 'print_section_info' ), // Callback
             'cabici-setting-admin' // Page
         );
 
         add_settings_field(
             'cabici_club',
-            'Club ID',
+            'Select Your Club',
             array( $this, 'club_callback' ),
             'cabici-setting-admin',
             'setting_section_id'
@@ -87,8 +87,6 @@ class CabiciSettingsPage
     public function sanitize( $input )
     {
         $new_input = array();
-        if( isset( $input['id_number'] ) )
-            $new_input['id_number'] = absint( $input['id_number'] );
 
         if( isset( $input['club'] ) )
             $new_input['club'] = sanitize_text_field( $input['club'] );
@@ -101,18 +99,7 @@ class CabiciSettingsPage
      */
     public function print_section_info()
     {
-        print 'Enter your settings below:';
-    }
-
-    /**
-     * Get the settings option array and print one of its values
-     */
-    public function id_number_callback()
-    {
-        printf(
-            '<input type="text" id="id_number" name="cabici_options[id_number]" value="%s" />',
-            isset( $this->options['id_number'] ) ? esc_attr( $this->options['id_number']) : ''
-        );
+        print 'Here you can select the name of the club that will be used to display race listings and results on this site.';
     }
 
     /**
@@ -120,10 +107,23 @@ class CabiciSettingsPage
      */
     public function club_callback()
     {
+        $clubs = get_club_list();
+        echo('<select id="club" name="cabici_options[club]">');
+        foreach($clubs as $club) {
+            if ($club['slug'] == $this->options['club']) {
+                echo('<option selected value="'.$club['slug'].'">'.$club['name'].'</option>');
+            } else {
+                echo('<option value="'.$club['slug'].'">'.$club['name'].'</option>');
+            }
+        }
+        echo('</select>');
+
+        /*
         printf(
             '<input type="text" id="club" name="cabici_options[club]" value="%s" />',
             isset( $this->options['club'] ) ? esc_attr( $this->options['club']) : ''
         );
+        */
     }
 }
 

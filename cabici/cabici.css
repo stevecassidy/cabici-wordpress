@@ -1,0 +1,7 @@
+table.cabicisummary tr>th {
+    width: 4em;
+}
+
+table.cabiciresults th:first-child {
+    width: 4em;
+}
