@@ -23,16 +23,20 @@ class cabici_nextrace_widget extends WP_Widget {
         echo $args['before_title'] . "Next Race" . $args['after_title'];
 
         $races = get_club_races();
-        $race = $races[0];
-        ?>
-        <ul class='raceinfo'>
-            <li class='date'><?= $race['date'] ?></li>
-            <li class='starttime'><?= $race['starttime'] ?></li>
-            <li class='title'><a target=new href="http://cabici.net/races/<?= $options['club'] ?>/<?= $race['id'] ?>"><?= $race['title'] ?></a></li>
-            <li class='location'><?= $race['location']['name'] ?></li>
-        </ul>
-        <?php
 
+        if ($races==[]) {
+            echo('<p>No next race information available.</p>');
+        } else {
+            $race = $races[0];
+
+            echo('<ul class="raceinfo">');
+            echo('<li class="date">'.$race['date'].'</li>');
+            echo('<li class="starttime">'.$race['starttime'].'</li>');
+            echo('<li class="title"><a target=new href="http://cabici.net/races/'.$options['club'].'/'.$race['id'].'">');
+            echo($race['title'].'</a></li>');
+            echo('<li class="location">'.$race['location']['name'].'</li>');
+            echo('</ul>');
+        }
         echo $args['after_widget'];
     }
 

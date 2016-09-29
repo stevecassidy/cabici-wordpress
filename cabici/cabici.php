@@ -29,7 +29,7 @@ add_action( 'wp_enqueue_scripts', 'wpdocs_cabici_scripts' );
 $cabici_config = array(
         'devel' => false,
         'url' => 'http://cabici.net/',
-        'cache' => true
+        'cache' => false
 );
 
 if ($cabici_config['devel']) {

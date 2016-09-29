@@ -1,4 +1,3 @@
-
 <?php
 
 add_shortcode( 'cabici_race_schedule', 'cabici_race_schedule_handler' );
