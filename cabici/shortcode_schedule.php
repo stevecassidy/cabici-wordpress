@@ -18,16 +18,21 @@ function cabici_race_schedule_handler( $atts, $content = null ) {
     ob_start();
     ?>
     <div class="cabici-container">
-        <p>Race Listings from <a target=new href="http://cabici.net/"</a>cabici.net</a>.</p>
-        <table class='table'>
+        <table class='racetable'>
             <thead>
                 <tr>
                     <th>Date/Start Time</th>
-                    <th>Race</th>
-                    <th>Location</th>
+                    <th>Location/Race</th>
                     <th>Officials</th>
                 </tr>
             </thead>
+            <tfoot>
+                <tr>
+                    <th colspan=3>
+                        <p>Race Listings from <a target=new href="http://cabici.net/"</a>cabici.net</a>.</p>
+                    </th>
+                </tr>
+            </tfoot>
             <tbody>
     <?php
     foreach ($races as $race) {
@@ -36,12 +41,18 @@ function cabici_race_schedule_handler( $atts, $content = null ) {
         $race_number = prev( $url_arr );
         ?>
         <tr>
-            <td><?= $race['date'] ?><br>
-               <?= $race['starttime'] ?></td>
             <td>
+                <strong><?php
+                $date = DateTime::createFromFormat('Y-m-d', $race['date']);
+                echo $date->format('D M dS');
+                ?></strong><br>
+                <?= $race['starttime'] ?><br>
+            </td>
+
+            <td>
+                <?= $race['location']['name'] ?><br>
                 <a target=new href="http://cabici.net/races/<?= $options['club']?>/<?= $race['id'] ?>"><?= $race['title'] ?></a>
             </td>
-            <td><?= $race['location']['name'] ?></td>
             <td>
                 <?php if ($race['officials']) { ?>
                 <ul>

@@ -13,7 +13,7 @@ services:
     environment:
       DB_NAME: wordpress
       DB_PASS: root
-      PLUGINS: akismet
+      PLUGINS: akismet,cabici
   db:
     image: mysql:5.7 # or mariadb
     ports:
