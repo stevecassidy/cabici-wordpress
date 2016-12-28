@@ -1,4 +1,28 @@
 <?php
+
+
+// Generate output describing the next race, for use in the widget and shortcode
+function generate_next_race() {
+
+    $races = get_club_races();
+
+    if ($races==[]) {
+        echo('<p>No next race information available.</p>');
+    } else {
+        $race = $races[0];
+
+        $date = DateTime::createFromFormat('Y-m-d', $race['date']);
+        $racedate =  $date->format('D M dS');
+
+        echo('<ul class="nextrace">');
+        echo('<li class="date">'.$racedate.'</li>');
+        echo('<li class="starttime">'.$race['starttime'].'</li>');
+        echo('<li class="location">'.$race['location']['name'].'</li>');
+        echo('<li class="title">'.$race['title'].'</li>');
+        echo('</ul>');
+    }
+}
+
 // Creating the widget
 class cabici_nextrace_widget extends WP_Widget {
 
@@ -22,21 +46,8 @@ class cabici_nextrace_widget extends WP_Widget {
         echo $args['before_widget'];
         echo $args['before_title'] . "Next Race" . $args['after_title'];
 
-        $races = get_club_races();
+        generate_next_race();
 
-        if ($races==[]) {
-            echo('<p>No next race information available.</p>');
-        } else {
-            $race = $races[0];
-
-            echo('<ul class="raceinfo">');
-            echo('<li class="date">'.$race['date'].'</li>');
-            echo('<li class="starttime">'.$race['starttime'].'</li>');
-            echo('<li class="title"><a target=new href="http://cabici.net/races/'.$options['club'].'/'.$race['id'].'">');
-            echo($race['title'].'</a></li>');
-            echo('<li class="location">'.$race['location']['name'].'</li>');
-            echo('</ul>');
-        }
         echo $args['after_widget'];
     }
 
@@ -53,8 +64,22 @@ class cabici_nextrace_widget extends WP_Widget {
     }
 } // Class cabici_nextrace_widget ends here
 
+
 // Register and load the widget
 function wpb_load_nextrace_widget() {
 	register_widget( 'cabici_nextrace_widget' );
 }
 add_action( 'widgets_init', 'wpb_load_nextrace_widget' );
+
+
+//----------- Shortcode cabici_next_race --------------
+
+add_shortcode( 'cabici_next_race', 'cabici_next_race_handler' );
+
+function cabici_next_race_handler( $atts, $content = null ) {
+
+    ob_start();
+    generate_next_race();
+    $content = ob_get_clean();
+    return $content;
+}

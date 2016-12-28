@@ -2,10 +2,18 @@ table.cabicisummary tr>th {
     width: 4em;
 }
 
-table.cabiciresults th:first-child {
-    width: 4em;
+div.nextrace {
+    margin-bottom: 1em;
 }
 
+div.nextrace ul {
+    list-style: none !important;
+    margin: 0px !important;
+}
+
+div.nextrace ul .date {
+    font-weight: bold;
+}
 
 .racetable
 {
@@ -23,7 +31,7 @@ table.cabiciresults th:first-child {
     font-family: "Open Sans", sans-serif;
 	color: #990033;
 	padding: 10px 8px;
-	border-bottom: 2px solid #6678b1;
+	border-bottom: 2px solid #990033;
     border-left: 0px;
     border-right: 0px;
 }

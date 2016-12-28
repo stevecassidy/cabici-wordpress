@@ -23,8 +23,6 @@ function cabici_last_result_handler( $atts, $content = null ) {
     ?>
     <div class="cabici-container">
         <h3><?= $recent_race['date'] ?>: <?= $recent_race['title'] ?> - <?= $recent_race['location']['name'] ?></h3>
-        <p>Race Results from <a target=new href="http://cabici.net/"</a>cabici.net</a>.</p>
-
             <?php
             foreach ($results as $result) {
                 if ($result['grade'] != $lastgrade) {
@@ -32,14 +30,14 @@ function cabici_last_result_handler( $atts, $content = null ) {
                         echo ('</tbody></table>');
                     }
                     echo('<h4>'.$result['grade'].' Grade</h4>');
-                    echo('<table class="table cabiciresults">
+                    echo('<table class="racetable">
                         <thead><tr><th>Place</th><th>Rider</th><th>Club</th></tr></thead>
                         <tbody>');
                     $lastgrade = $result['grade'];
                 }
                 ?>
                 <tr>
-                    <th><?= $result['place'] ?></th>
+                    <td><?= $result['place'] ?></td>
                     <td><?= $result['rider'] ?></td>
                     <td><?= $result['club'] ?></td>
                 </tr>
@@ -47,6 +45,7 @@ function cabici_last_result_handler( $atts, $content = null ) {
             }
             ?>
             </tbody></table>
+            <p>Race Results from <a target=new href="http://cabici.net/"</a>cabici.net</a>.</p>
     </div>
 
     <?php

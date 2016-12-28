@@ -66,3 +66,41 @@ function wpb_load_raceresult_widget() {
 	register_widget( 'cabici_result_widget' );
 }
 add_action( 'widgets_init', 'wpb_load_raceresult_widget' );
+
+
+
+//----------- Shortcode cabici_last_result_brief --------------
+
+add_shortcode( 'cabici_last_result_brief', 'cabici_last_result_brief_handler' );
+
+function cabici_last_result_brief_handler( $atts, $content = null ) {
+
+    ob_start();
+
+    $recent_race = most_recent_race($club);
+
+    echo '<h3>'.$recent_race['location']['name'].'</h3>';
+
+    $results = get_race_result($recent_race['id']);
+    if ($results == []) {
+        echo( '<p>No results available.</p>');
+    } else {
+        $lastgrade = "X";
+        echo('<table class="table cabicisummary">');
+        foreach ($results as $result) {
+            if ($result['grade'] != $lastgrade) {
+                if ($lastgrace != 'X') {
+                    echo('</tr>');
+                }
+                echo('<tr><th>'.$result['grade'].'</th>');
+                echo('<td>'.$result['rider'].'</td>');
+                $lastgrade = $result['grade'];
+            }
+
+        }
+        echo '</table>';
+    }
+
+    $content = ob_get_clean();
+    return $content;
+}
