@@ -131,7 +131,7 @@ function get_race_result($raceid) {
     if ($cabici_config['devel']) {
         $url = 'api/raceresults-placed';
     } else {
-        $url = 'api/raceresults/?race='.$raceid.'&placed=true';
+        $url = 'api/raceresults/?race='.$raceid;
     }
 
     $result = api_request($url);

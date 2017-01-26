@@ -19,29 +19,49 @@ function cabici_last_result_handler( $atts, $content = null ) {
     $results = get_race_result($recent_race['id']);
     $lastgrade = "X";
 
+    // count the number of riders in each grade
+    $counter = 0;
+    $totalriders = 0;
+    foreach ($results as $result) {
+        if ($result['grade'] != $lastgrade) {
+            if ($lastgrade != 'X') {
+                $gradecount[$lastgrade] = $counter;
+                $counter = 0;
+            }
+        }
+        $counter += 1;
+        $totalriders += 1;
+        $lastgrade = $result['grade'];
+    }
+    $gradecount[$lastgrade] = $counter;
+    $lastgrade = "X";
+
     ob_start();
     ?>
     <div class="cabici-container">
         <h3><?= $recent_race['date'] ?>: <?= $recent_race['title'] ?> - <?= $recent_race['location']['name'] ?></h3>
             <?php
+            echo('<p>'.$totalriders.' Riders</p>');
             foreach ($results as $result) {
                 if ($result['grade'] != $lastgrade) {
                     if ($lastgrace != 'X') {
                         echo ('</tbody></table>');
                     }
-                    echo('<h4>'.$result['grade'].' Grade</h4>');
+                    echo('<h4>'.$result['grade'].' Grade ('.$gradecount[$result['grade']].' riders)</h4>');
                     echo('<table class="racetable">
                         <thead><tr><th>Place</th><th>Rider</th><th>Club</th></tr></thead>
                         <tbody>');
                     $lastgrade = $result['grade'];
                 }
-                ?>
-                <tr>
-                    <td><?= $result['place'] ?></td>
-                    <td><?= $result['rider'] ?></td>
-                    <td><?= $result['club'] ?></td>
-                </tr>
-                <?php
+                if ($result['place'] != '') {
+                    ?>
+                    <tr>
+                        <td><?= $result['place'] ?></td>
+                        <td><?= $result['rider'] ?></td>
+                        <td><?= $result['club'] ?></td>
+                    </tr>
+                    <?php
+                }
             }
             ?>
             </tbody></table>
