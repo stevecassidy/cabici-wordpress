@@ -79,7 +79,10 @@ function cabici_last_result_brief_handler( $atts, $content = null ) {
 
     $recent_race = most_recent_race($club);
 
-    echo '<h3>'.$recent_race['location']['name'].'</h3>';
+    $date = DateTime::createFromFormat('Y-m-d', $recent_race['date']);
+    $racedate =  $date->format('M jS');
+
+    echo '<h3>'.$racedate.' | '.$recent_race['location']['shortname'].'</h3>';
 
     $results = get_race_result($recent_race['id']);
     if ($results == []) {

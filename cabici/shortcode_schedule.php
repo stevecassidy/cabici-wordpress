@@ -52,6 +52,10 @@ function cabici_race_schedule_handler( $atts, $content = null ) {
             <td>
                 <?= $race['location']['name'] ?><br>
                 <a target=new href="http://cabici.net/races/<?= $options['club']?>/<?= $race['id'] ?>"><?= $race['title'] ?></a>
+                <?php
+                if ($race['status'] == "c") {
+                    echo('CANCELLED');
+                }?>
             </td>
             <td>
                 <?php if ($race['officials']) { ?>

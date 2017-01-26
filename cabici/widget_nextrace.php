@@ -9,17 +9,25 @@ function generate_next_race() {
     if ($races==[]) {
         echo('<p>No next race information available.</p>');
     } else {
-        $race = $races[0];
-
+        // get the first race that is published
+        foreach ($races as $therace) {
+	    console_log($therace['status']);
+            if ($therace['status'] == "p") {
+		$race = $therace;
+                break;
+            };
+        };
         $date = DateTime::createFromFormat('Y-m-d', $race['date']);
-        $racedate =  $date->format('D M dS');
+        $racedate =  $date->format('D M jS');
 
-        echo('<ul class="nextrace">');
-        echo('<li class="date">'.$racedate.'</li>');
-        echo('<li class="starttime">'.$race['starttime'].'</li>');
-        echo('<li class="location">'.$race['location']['name'].'</li>');
+        echo('<div class="nextrace">');
+        echo('<ul>');
+        echo('<li class="date">'.$racedate.' | '.$race['location']['shortname'].'</li>');
         echo('<li class="title">'.$race['title'].'</li>');
+        echo('<li class="signon">Sign on from '.$race['signontime'].'</li>');
+        echo('<li class="starttime">Start '.$race['starttime'].'</li>');
         echo('</ul>');
+        echo('</div>');
     }
 }
 
