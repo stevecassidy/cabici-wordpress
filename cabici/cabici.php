@@ -3,9 +3,9 @@
 Plugin Name: Cabici Race Schedule
 Plugin URI: http://cabici.net/
 Description: Add a race schedule for your club with Cabici
-Version: 0
-Author: Owen Cassidy
-Author URI: http://owencassidy.me/
+Version: 1.0
+Author: Steve Cassidy
+Author URI: http://stevecassidy.net/
 */
 
 
@@ -16,6 +16,7 @@ include 'widget_racelist.php';
 include 'shortcode_results.php';
 include 'shortcode_schedule.php';
 include 'shortcode_pastresults.php';
+include 'shortcode_pointscore.php';
 
 /**
  * Proper way to enqueue scripts and styles
@@ -172,23 +173,15 @@ function most_recent_race($clubslug) {
     return $races[0];
 }
 
-/*
-// Custom Post Type
 
-add_action( 'init', 'create_post_type' );
-function create_post_type() {
-  register_post_type( 'cabici_races',
-    array(
-      'labels' => array(
-        'name' => __( 'Races' ),
-        'singular_name' => __( 'Race' )
-      ),
-      'public' => true,
-      'has_archive' => true,
-    )
-  );
+
+function get_pointscore($id) {
+
+    $url = 'api/pointscores/'.$id;
+
+    console_log($url);
+    return api_request($url);
 }
-*/
 
 
 // Dashboard Widget
