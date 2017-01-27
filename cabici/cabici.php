@@ -17,6 +17,7 @@ include 'shortcode_results.php';
 include 'shortcode_schedule.php';
 include 'shortcode_pastresults.php';
 include 'shortcode_pointscore.php';
+include 'widget_pointscore.php';
 
 /**
  * Proper way to enqueue scripts and styles
