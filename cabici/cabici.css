@@ -43,13 +43,13 @@ div.nextrace ul .date {
     border-right: 0px;
     vertical-align: text-top;
 }
-.racetable tbody tr:hover td
+
+
+.hovertable tbody tr:hover td
 {
 	background-color: #DDD;
 	color: #000;
 }
-
-
 .racetable ul  {
     list-style: none !important;
     margin: 0px !important;

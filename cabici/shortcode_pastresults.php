@@ -1,11 +1,14 @@
 <?php
 
-add_shortcode( 'cabici_race_schedule', 'cabici_race_schedule_handler' );
+add_shortcode( 'cabici_past_results', 'cabici_past_results_handler' );
 
-function cabici_race_schedule_handler( $atts, $content = null ) {
+function cabici_past_results_handler( $atts, $content = null ) {
 
     $options = get_option('cabici_options');
     $club = $options['club'];
+    $a = shortcode_atts( array(
+        'count' => 15,
+    ), $atts );
 
     if (!$club) {
         return '<p>No Club configured.</p>';
@@ -13,17 +16,17 @@ function cabici_race_schedule_handler( $atts, $content = null ) {
 
     $recent_race = most_recent_race($club);
 
-    $races = get_club_races();
+    $races = get_club_races_with_results($a['count']);
 
     ob_start();
     ?>
     <div class="cabici-container">
-        <table class='racetable hovertable'>
+        <table class='racetable'>
             <thead>
                 <tr>
                     <th>Date/Start Time</th>
                     <th>Location/Race</th>
-                    <th>Officials</th>
+                    <th></th>
                 </tr>
             </thead>
             <tfoot>
@@ -44,11 +47,9 @@ function cabici_race_schedule_handler( $atts, $content = null ) {
             <td>
                 <strong><?php
                 $date = DateTime::createFromFormat('Y-m-d', $race['date']);
-                echo $date->format('D M dS');
-                ?></strong><br>
-                <?= $race['starttime'] ?><br>
+                echo $date->format('D M jS');
+                ?></strong>
             </td>
-
             <td>
                 <?= $race['location']['name'] ?><br>
                 <a target=new href="http://cabici.net/races/<?= $options['club']?>/<?= $race['id'] ?>"><?= $race['title'] ?></a>
@@ -57,34 +58,14 @@ function cabici_race_schedule_handler( $atts, $content = null ) {
                     echo('CANCELLED');
                 }?>
             </td>
-            <td>
-                <?php if ($race['officials']) { ?>
-                <ul>
-                    <li><strong>Commissaire:</strong> <?= $race['officials']['Commissaire'][0]['name'] ?></li>
-                    <li><strong>Duty Officer:</strong>  <?= $race['officials']['Duty Officer'][0]['name'] ?></li>
-                    <li><strong>Duty Helpers:</strong>
-                        <?php
-                            foreach ($race['officials']['Duty Helper'] as $dh) {
-                                echo($dh['name']. ' ');
-                            }
-                        ?>
-                    </li>
-                </ul>
-                <?php } ?>
-            </td>
-            <!--
-		<td><a onclick="insertResults('<?= $race['id'] ?>', '.race-container')">View results</a></td>
-	    -->
+            <td><a id="restoggle<?= $race['id'] ?>" onclick="insertResults('<?= $race['id'] ?>', this)">View Results</a></td>
         </tr>
         <?php
     }
     ?>
             </tbody>
         </table>
-        <div class="race-container"></div>
     </div>
-    <script type="text/javascript" src="/wp-content/plugins/cabici/races.js"></script>
-    <!-- also rely on jquery -->
     <?php
 
     $table = ob_get_clean();

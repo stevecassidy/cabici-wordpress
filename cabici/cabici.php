@@ -15,12 +15,14 @@ include 'widget_result.php';
 include 'widget_racelist.php';
 include 'shortcode_results.php';
 include 'shortcode_schedule.php';
+include 'shortcode_pastresults.php';
 
 /**
  * Proper way to enqueue scripts and styles
  */
 function wpdocs_cabici_scripts() {
     wp_enqueue_style( 'style-name', plugin_dir_url(__FILE__) . 'cabici.css');
+    wp_enqueue_script('races-js', plugin_dir_url(__FILE__) . 'races.js');
 }
 add_action( 'wp_enqueue_scripts', 'wpdocs_cabici_scripts' );
 
@@ -29,7 +31,7 @@ add_action( 'wp_enqueue_scripts', 'wpdocs_cabici_scripts' );
 $cabici_config = array(
         'devel' => false,
         'url' => 'http://cabici.net/',
-        'cache' => false
+        'cache' => true
 );
 
 if ($cabici_config['devel']) {
@@ -62,8 +64,9 @@ function api_request($url) {
         $json = wp_remote_retrieve_body( $resp );
         $data = json_decode( $json, true );
 
-        set_transient($url, $races, HOUR_IN_SECONDS);
+        set_transient($url, $data, HOUR_IN_SECONDS);
     }
+
     return $data;
 }
 
@@ -80,6 +83,18 @@ function get_club_races() {
     return api_request($url);
 }
 
+
+function get_club_races_with_results($count) {
+
+    global $cabici_config;
+
+    $options = get_option('cabici_options');
+    $club = $options['club'];
+
+    $url = 'api/races?club='.$club.'&select=results&count='.$count;
+
+    return api_request($url);
+}
 
 function get_all_races($count) {
 
