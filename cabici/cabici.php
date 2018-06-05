@@ -61,14 +61,17 @@ function api_request($url) {
     $url = $cabici_url.$url;
 
     if ( !$cabici_config['cache'] || false === ( $data = get_transient( $url ) ) ) {
-
-        $resp = wp_remote_get( $url );
+        // longer timeout to allow for big results like pointscore
+        $resp = wp_remote_get( $url,  array( 'timeout' => 60 ) );
+        if( is_wp_error( $resp ) ) {
+            console_log($resp->get_error_message());
+            return [];
+        }
         $json = wp_remote_retrieve_body( $resp );
         $data = json_decode( $json, true );
 
         set_transient($url, $data, HOUR_IN_SECONDS);
     }
-
     return $data;
 }
 
@@ -174,16 +177,12 @@ function most_recent_race($clubslug) {
     return $races[0];
 }
 
-
-
 function get_pointscore($id) {
 
     $url = 'api/pointscores/'.$id;
 
-    console_log($url);
     return api_request($url);
 }
-
 
 // Dashboard Widget
 

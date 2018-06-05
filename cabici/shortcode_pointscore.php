@@ -22,6 +22,15 @@ function cabici_pointscore_handler( $atts, $content = null ) {
 
     $pointscore = get_pointscore($a['id']);
 
+    if (!$pointscore) {
+        return "<p>No pointscore data found.</p>";
+    }
+
+    if (count($pointscore['results']) == 0) {
+        return "<p>No pointscore results yet.</p>";
+    }
+
+
     ob_start();
     ?>
     <div class="cabici-container">
