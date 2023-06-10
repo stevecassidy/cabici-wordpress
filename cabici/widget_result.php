@@ -31,15 +31,15 @@ class cabici_result_widget extends WP_Widget {
         if ($results == []) {
             echo( '<p>No results available.</p>');
         } else {
-            $lastgrade = "X";
+            $last_grade = "X";
             echo('<table class="table cabicisummary">');
             foreach ($results as $result) {
-                if ($result['grade'] != $lastgrade) {
-                    if ($lastgrace != 'X') {
+                if ($result['grade'] != $last_grade) {
+                    if ($last_grade != 'X') {
                         echo('</tr>');
                     }
                     echo('<tr><th>'.$result['grade'].'</th>');
-                    $lastgrade = $result['grade'];
+                    $last_grade = $result['grade'];
                 }
                 echo('<td>'.$result['rider'].'</td>');
             }
@@ -92,16 +92,18 @@ function cabici_last_result_brief_handler( $atts, $content = null ) {
     if ($results == []) {
         echo( '<p>No results available.</p>');
     } else {
-        $lastgrade = "X";
+        $last_grade = "X";
         echo('<table class="table cabicisummary">');
         foreach ($results as $result) {
-            if ($result['grade'] != $lastgrade) {
+            if ($result['grade'] != $last_grade) {
                 if ($lastgrace != 'X') {
                     echo('</tr>');
                 }
-                echo('<tr><th>'.$result['grade'].'</th>');
-                echo('<td>'.$result['rider'].'</td>');
-                $lastgrade = $result['grade'];
+                if ($result['place'] == '1') {
+                  echo('<tr><th>' . $result['grade'] . '</th>');
+                  echo('<td>' . $result['rider'] . '</td>');
+                  $last_grade = $result['grade'];
+                }
             }
 
         }
