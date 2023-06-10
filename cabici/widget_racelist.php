@@ -26,11 +26,11 @@ class cabici_racelist_widget extends WP_Widget {
         echo('<table class="table">');
         foreach ($races as $race){
             echo('<tr><th>'.$race['date'].' '.$race['club']['name'].'</th></tr>');
-            echo('<tr><td><a target=new href="http://cabici.net/races/'.$race['club']['slug'].'/'.$race['id'].'">'.$race['location']['name'].'</a></td>');
+            echo('<tr><td><a target=new href="https://cabici.net/races/'.$race['club']['slug'].'/'.$race['id'].'">'.$race['location']['name'].'</a></td>');
             echo('</tr>');
         }
         echo('</table>');
-        echo('<p>Race listings from <a href="http://cabici.net">cabici.net</a></p>');
+        echo('<p>Race listings from <a href="https://cabici.net">cabici.net</a></p>');
 
         echo $args['after_widget'];
     }

@@ -32,7 +32,7 @@ function cabici_past_results_handler( $atts, $content = null ) {
             <tfoot>
                 <tr>
                     <th colspan=3>
-                        <p>Race Listings from <a target=new href="http://cabici.net/"</a>cabici.net</a>.</p>
+                        <p>Race Listings from <a target=new href="https://cabici.net/"</a>cabici.net</a>.</p>
                     </th>
                 </tr>
             </tfoot>
@@ -52,7 +52,7 @@ function cabici_past_results_handler( $atts, $content = null ) {
             </td>
             <td>
                 <?= $race['location']['name'] ?><br>
-                <a target=new href="http://cabici.net/races/<?= $options['club']?>/<?= $race['id'] ?>"><?= $race['title'] ?></a>
+                <a target=new href="https://cabici.net/races/<?= $options['club']?>/<?= $race['id'] ?>"><?= $race['title'] ?></a>
                 <?php
                 if ($race['status'] == "c") {
                     echo('CANCELLED');

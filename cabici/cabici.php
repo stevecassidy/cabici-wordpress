@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Cabici Race Schedule
-Plugin URI: http://cabici.net/
+Plugin URI: https://cabici.net/
 Description: Add a race schedule for your club with Cabici
 Version: 1.0
 Author: Steve Cassidy
@@ -32,7 +32,7 @@ add_action( 'wp_enqueue_scripts', 'wpdocs_cabici_scripts' );
 // global configuration
 $cabici_config = array(
         'devel' => false,
-        'url' => 'http://cabici.net/',
+        'url' => 'https://cabici.net/',
         'cache' => true
 );
 

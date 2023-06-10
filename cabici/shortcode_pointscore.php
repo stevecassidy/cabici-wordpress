@@ -50,7 +50,7 @@ function cabici_pointscore_handler( $atts, $content = null ) {
         }
         ?>
             </tbody></table>
-            <p>Race Results from <a target=new href="http://cabici.net/"</a>cabici.net</a>.</p>
+            <p>Race Results from <a target=new href="https://cabici.net/"</a>cabici.net</a>.</p>
     </div>
 
     <?php
