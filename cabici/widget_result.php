@@ -99,7 +99,7 @@ function cabici_last_result_brief_handler( $atts, $content = null ) {
                 if ($lastgrace != 'X') {
                     echo('</tr>');
                 }
-                if ($result['place'] == '1') {
+                if ($result['place'] == 1) {
                   echo('<tr><th>' . $result['grade'] . '</th>');
                   echo('<td>' . $result['rider'] . '</td>');
                   $last_grade = $result['grade'];
