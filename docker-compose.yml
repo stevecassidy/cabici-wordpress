@@ -2,6 +2,11 @@ version: '2'
 services:
   wordpress:
     image: visiblevc/wordpress:latest
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - /dev/fuse
+    privileged: true
     links:
       - db
     ports:
