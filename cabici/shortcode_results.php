@@ -53,7 +53,7 @@ function cabici_last_result_handler( $atts, $content = null ) {
                         <tbody>');
                     $lastgrade = $result['grade'];
                 }
-                if ($result['place'] != '') {
+                if ($result['place'] != 0) {
                     ?>
                     <tr>
                         <td><?= $result['place'] ?></td>
